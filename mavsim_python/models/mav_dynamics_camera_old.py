@@ -18,7 +18,7 @@ import parameters.camera_parameters as CAM
 
 import parameters.aerosonde_parameters as MAV
 import parameters.sensor_parameters as SENSOR
-from tools.rotations import Quaternion2Rotation, Quaternion2Euler, Euler2Rotation
+from tools.rotations import quaternion_to_rotation, quaternion_to_euler
 
 class MavDynamics:
     def __init__(self, Ts):
@@ -231,8 +231,8 @@ class MavDynamics:
     def _update_true_state(self):
         # update the class structure for the true state:
         #   [pn, pe, h, Va, alpha, beta, phi, theta, chi, p, q, r, Vg, wn, we, psi, gyro_bx, gyro_by, gyro_bz]
-        phi, theta, psi = Quaternion2Euler(self._state[6:10])
-        pdot = Quaternion2Rotation(self._state[6:10]) @ self._state[3:6]
+        phi, theta, psi = quaternion_to_euler(self._state[6:10])
+        pdot = quaternion_to_rotation(self._state[6:10]) @ self._state[3:6]
         self.true_state.north = self._state.item(0)
         self.true_state.east = self._state.item(1)
         self.true_state.altitude = -self._state.item(2)

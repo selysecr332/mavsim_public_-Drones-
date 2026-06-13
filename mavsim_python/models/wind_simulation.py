@@ -13,7 +13,7 @@ class WindSimulation:
         self._steady_state = steady_state
         ##### TODO #####
 
-        #   Dryden gust model parameters (pg 56 UAV book)
+        #   Dryden gust model parameters (pg 62 UAV book)
 
         # Dryden transfer functions (section 4.4 UAV book) - Fill in proper num and den
         self.u_w = TransferFunction(num=np.array([[0]]), den=np.array([[1,1]]),Ts=Ts)

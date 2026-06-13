@@ -1,5 +1,5 @@
 import numpy as np
-import design_projects.chap05.model_coef as TF
+import models.model_coef as TF
 import parameters.aerosonde_parameters as MAV
 
 

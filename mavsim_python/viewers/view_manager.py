@@ -7,9 +7,9 @@ mavsim: manage_viewers
 """
 import pyqtgraph as pg
 from viewers.mav_viewer import MavViewer
-from viewers.mav_viewer_path import MavAndPathViewer
-from viewers.mav_viewer_waypoint import MAVAndWaypointViewer
-from viewers.mav_viewer_map import MAVWorldViewer
+from viewers.mav_path_viewer import MavAndPathViewer
+from viewers.mav_waypoint_viewer import MAVAndWaypointViewer
+from viewers.mav_world_viewer import MAVWorldViewer
 from viewers.mav_viewer_camera import MAVWorldCameraViewer
 from viewers.planner_viewer import PlannerViewer
 from viewers.data_viewer import DataViewer
@@ -147,6 +147,7 @@ class ViewManager:
             waypoints_not_smooth, 
             waypoints,
             radius)
+        self.app.processEvents()
 
     def close(self, dataplot_name: str=[], sensorplot_name: str=[]):
         # Save an Image of the Plot

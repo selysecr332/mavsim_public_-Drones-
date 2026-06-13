@@ -6,7 +6,7 @@ mavsim_python: drawing tools
 """
 import numpy as np
 import pyqtgraph.opengl as gl
-from tools.rotations import Euler2Rotation
+from tools.rotations import euler_to_rotation
 
 
 class DrawTarget:
