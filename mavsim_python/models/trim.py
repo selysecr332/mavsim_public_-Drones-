@@ -6,7 +6,7 @@ compute_trim
 """
 import numpy as np
 from scipy.optimize import minimize
-from tools.rotations import Euler2Quaternion
+from tools.rotations import euler_to_quaternion
 from message_types.msg_delta import MsgDelta
 import time
 
@@ -15,7 +15,7 @@ def compute_trim(mav, Va, gamma):
 
     ##### TODO #####
     # set the initial conditions of the optimization
-    e0 = Euler2Quaternion(0., gamma, 0.)
+    e0 = euler_to_quaternion(0., gamma, 0.)
     state0 = np.array([[0],  # pn
                    [0],  # pe
                    [0],  # pd

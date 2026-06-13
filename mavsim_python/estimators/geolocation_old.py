@@ -9,7 +9,7 @@ import numpy as np
 from scipy import stats
 import parameters.simulation_parameters as SIM
 import parameters.camera_parameters as CAM
-from tools.rotations import Euler2Rotation
+from tools.rotations import euler_to_rotation
 
 
 class Geolocation:

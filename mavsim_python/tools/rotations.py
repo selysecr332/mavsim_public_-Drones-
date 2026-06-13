@@ -139,30 +139,32 @@ def rotation_to_quaternion(R: npt.NDArray[np.float64]) -> npt.NDArray[np.float64
     r32 = R[2][1]
     r33 = R[2][2]
 
-    # can't the determinant be used to allow removal of all the if statements?
-    tmp=r11+r22+r33
-    if tmp>0:
-        e0 = 0.5*np.sqrt(1+tmp)
+    tmp0 = r11 + r22 + r33
+    if tmp0 > 0:
+        e0 = 0.5*np.sqrt(1+tmp0)
     else:
-        e0 = 0.5*np.sqrt(((r12-r21)**2+(r13-r31)**2+(r23-r32)**2)/(3-tmp))
+        e0 = 0.5*np.sqrt(((r12-r21)**2+(r13-r31)**2+(r23-r32)**2)/(3-tmp0))
 
-    tmp=r11-r22-r33
-    if tmp>0:
-        e1 = 0.5*np.sqrt(1+tmp)
+    tmp1 = r11 - r22 - r33
+    if tmp1 > 0:
+        e1 = 0.5*np.sqrt(1+tmp1)
     else:
-        e1 = 0.5*np.sqrt(((r12+r21)**2+(r13+r31)**2+(r23-r32)**2)/(3-tmp))
+        e1 = 0.5*np.sqrt(((r12+r21)**2+(r13+r31)**2+(r23-r32)**2)/(3-tmp1))
+    e1 = np.sign(r32-r23) * e1
 
-    tmp=-r11+r22-r33
-    if tmp>0:
-        e2 = 0.5*np.sqrt(1+tmp)
+    tmp2 = -r11 + r22 - r33
+    if tmp2 > 0:
+        e2 = 0.5*np.sqrt(1+tmp2)
     else:
-        e2 = 0.5*np.sqrt(((r12+r21)**2+(r13+r31)**2+(r23+r32)**2)/(3-tmp))
+        e2 = 0.5*np.sqrt(((r12+r21)**2+(r13-r31)**2+(r23+r32)**2)/(3-tmp2))
+    e2 = np.sign(r13-r31) * e2
 
-    tmp=-r11+-22+r33
-    if tmp>0:
-        e3 = 0.5*np.sqrt(1+tmp)
+    tmp3 = -r11 - r22 + r33
+    if tmp3 > 0:
+        e3 = 0.5*np.sqrt(1+tmp3)
     else:
-        e3 = 0.5*np.sqrt(((r12-r21)**2+(r13+r31)**2+(r23+r32)**2)/(3-tmp))
+        e3 = 0.5*np.sqrt(((r12-r21)**2+(r13+r31)**2+(r23+r32)**2)/(3-tmp3))
+    e3 = np.sign(r21-r12) * e3
 
     return np.array([[e0], [e1], [e2], [e3]])
 
@@ -204,4 +206,3 @@ def hat(omega: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
                           [c, 0, -a],
                           [-b, a, 0]])
     return omega_hat
-

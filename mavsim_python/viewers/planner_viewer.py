@@ -60,8 +60,8 @@ class PlannerViewer:
                                                 antialias=True,
                                                 mode='line_strip')
             self.window.addItem(tree_plot_object)
-            DrawWaypoints(waypoints, radius, blue, self.window)
-            DrawWaypoints(smoothed_waypoints, radius, red, self.window)
+        DrawWaypoints(waypoints, radius, blue, self.window)
+        DrawWaypoints(smoothed_waypoints, radius, red, self.window)
 
     def get_straight_line_points(self, tree, i):
         points = self.R @ tree.ned
