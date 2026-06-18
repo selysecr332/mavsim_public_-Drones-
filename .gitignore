@@ -6,6 +6,8 @@
 *.mp4
 *.bmp
 *.png
+!screenshoot/
+!screenshoot/*.png
 *.svg
 
 # ======================================

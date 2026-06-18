@@ -63,7 +63,7 @@ while sim_time < SIM.end_time:
         waypoints = path_planner.update(world_map, estimated_state, PLAN.R_min)
 
     # -------path manager-------------
-    path = path_manager.update(waypoints, estimated_state, PLAN.R_min)
+    path = path_manager.update(waypoints, PLAN.R_min, estimated_state)
 
     # -------path follower-------------
     autopilot_commands = path_follower.update(path, estimated_state)

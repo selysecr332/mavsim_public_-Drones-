@@ -13,28 +13,25 @@ import time
 def compute_trim(mav, Va, gamma):
     # define initial state and input
 
-    ##### TODO #####
     # set the initial conditions of the optimization
-    e0 = euler_to_quaternion(0., gamma, 0.)
-    state0 = np.array([[0],  # pn
-                   [0],  # pe
-                   [0],  # pd
-                   [0],  # u
-                   [0.], # v
-                   [0.], # w
-                   [1],  # e0
-                   [0],  # e1
-                   [0],  # e2
-                   [0],  # e3
-                   [0.], # p
-                   [0.], # q
-                   [0.]  # r
-                   ])
-    delta0 = np.array([[0],  # elevator
-                       [0],  # aileron
-                       [0],  # rudder
-                       [0]]) # throttle
-    x0 = np.concatenate((state0, delta0), axis=0)
+    e = euler_to_quaternion(0., gamma, 0.)
+    state0 = np.array([
+        0.,  # pn
+        0.,  # pe
+        -100.,  # pd
+        Va * np.cos(gamma),  # u
+        0.,  # v
+        Va * np.sin(gamma),  # w
+        e.item(0),  # e0
+        e.item(1),  # e1
+        e.item(2),  # e2
+        e.item(3),  # e3
+        0.,  # p
+        0.,  # q
+        0.,  # r
+    ])
+    delta0 = np.array([0., 0., 0., 0.5])  # elevator, aileron, rudder, throttle
+    x0 = np.concatenate((state0, delta0))
     # define equality constraints
     cons = ({'type': 'eq',
              'fun': lambda x: np.array([
@@ -64,7 +61,7 @@ def compute_trim(mav, Va, gamma):
                    constraints=cons, 
                    options={'ftol': 1e-10, 'disp': True})
     # extract trim state and input and return
-    trim_state = np.array([res.x[0:13]]).T
+    trim_state = res.x[0:13].reshape(-1, 1)
     trim_input = MsgDelta(elevator=res.x.item(13),
                           aileron=res.x.item(14),
                           rudder=res.x.item(15),
@@ -76,6 +73,17 @@ def compute_trim(mav, Va, gamma):
 
 def trim_objective_fun(x, mav, Va, gamma):
     # objective function to be minimized
-    ##### TODO #####
-    J = 0
+    state = x[0:13].reshape(-1, 1)
+    delta = MsgDelta(
+        elevator=x[13],
+        aileron=x[14],
+        rudder=x[15],
+        throttle=x[16],
+    )
+    mav._state = state
+    mav._update_velocity_data()
+    forces_moments = mav._forces_moments(delta)
+    x_dot = mav._f(state, forces_moments)
+    J = (x_dot.item(3) ** 2 + x_dot.item(4) ** 2 + x_dot.item(5) ** 2
+         + x_dot.item(10) ** 2 + x_dot.item(11) ** 2 + x_dot.item(12) ** 2)
     return J

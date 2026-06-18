@@ -21,87 +21,70 @@ from estimators.filters import AlphaFilter, ExtendedKalmanFilterContinuousDiscre
 class Observer:
     def __init__(self, ts):
         # initialized estimated state message
-        ##### TODO #####        
+        tau_gyro = 1.0
+        alpha_gyro = SIM.ts_control / (SIM.ts_control + tau_gyro)
         self.ekf = ExtendedKalmanFilterContinuousDiscrete(
-            f=self.f, 
-            Q = np.diag([
-                (0.)**2,  # pn
-                (0.)**2,  # pe
-                (0.)**2,  # pd
-                (0.)**2,  # u
-                (0.)**2,  # v
-                (0.)**2,  # w
-                (0.)**2,  # phi
-                (0.)**2,  # theta
-                (0.)**2,  # psi
-                (0.)**2,  # bx
-                (0.)**2,  # by
-                (0.)**2,  # bz
-                (0.)**2,  # wn
-                (0.)**2,  # we
-                ]),
-            P0= np.diag([
-                0**2,  # pn
-                0**2,  # pe
-                0**2,  # pd
-                0**2,  # u
-                0**2,  # v
-                0**2,  # w
-                np.radians(0)**2,  # phi
-                np.radians(0)**2,  # theta
-                np.radians(0)**2,  # psi
-                np.radians(0)**2,  # bx
-                np.radians(0)**2,  # by
-                np.radians(0)**2,  # bz
-                0**2,  # wn
-                0**2,  # we
-                ]), 
+            f=self.f,
+            Q=np.diag([
+                (0.1) ** 2, (0.1) ** 2, (0.1) ** 2,
+                (1.0) ** 2, (1.0) ** 2, (1.0) ** 2,
+                np.radians(1.0) ** 2, np.radians(1.0) ** 2, np.radians(1.0) ** 2,
+                np.radians(0.01) ** 2, np.radians(0.01) ** 2, np.radians(0.01) ** 2,
+                (0.1) ** 2, (0.1) ** 2,
+            ]),
+            P0=np.diag([
+                (10.) ** 2, (10.) ** 2, (10.) ** 2,
+                (10.) ** 2, (10.) ** 2, (10.) ** 2,
+                np.radians(30.) ** 2, np.radians(30.) ** 2, np.radians(30.) ** 2,
+                np.radians(0.01) ** 2, np.radians(0.01) ** 2, np.radians(0.01) ** 2,
+                (5.) ** 2, (5.) ** 2,
+            ]),
             xhat0=np.array([[
-                MAV.north0,  # pn
-                MAV.east0,  # pe
-                MAV.down0,  # pd
-                MAV.Va0,  # u
-                0,  # v
-                0,  # w
-                0,  # phi
-                0,  # theta
-                MAV.psi0,  # psi
-                0,  # bx
-                0,  # by
-                0,  # bz
-                0,  # wn
-                0,  # we
-                ]]).T, 
+                MAV.north0,
+                MAV.east0,
+                MAV.down0,
+                MAV.Va0,
+                0,
+                0,
+                0,
+                0,
+                MAV.psi0,
+                0,
+                0,
+                0,
+                0,
+                0,
+            ]]).T,
             Qu=np.diag([
-                SENSOR.gyro_sigma**2, 
-                SENSOR.gyro_sigma**2, 
-                SENSOR.gyro_sigma**2, 
-                SENSOR.accel_sigma**2,
-                SENSOR.accel_sigma**2,
-                SENSOR.accel_sigma**2]), 
+                SENSOR.gyro_sigma ** 2,
+                SENSOR.gyro_sigma ** 2,
+                SENSOR.gyro_sigma ** 2,
+                SENSOR.accel_sigma ** 2,
+                SENSOR.accel_sigma ** 2,
+                SENSOR.accel_sigma ** 2,
+            ]),
             Ts=ts,
-            N=10
-            )
+            N=10,
+        )
         self.R_analog = np.diag([
-            SENSOR.abs_pres_sigma**2,
-            SENSOR.diff_pres_sigma**2,
-            (0.01)**2
+            SENSOR.abs_pres_sigma ** 2,
+            SENSOR.diff_pres_sigma ** 2,
+            (0.01) ** 2,
         ])
         self.R_gps = np.diag([
-            SENSOR.gps_n_sigma**2,
-            SENSOR.gps_e_sigma**2,
-            SENSOR.gps_Vg_sigma**2,
-            SENSOR.gps_course_sigma**2
+            SENSOR.gps_n_sigma ** 2,
+            SENSOR.gps_e_sigma ** 2,
+            SENSOR.gps_Vg_sigma ** 2,
+            SENSOR.gps_course_sigma ** 2,
         ])
         self.R_pseudo = np.diag([
-                    (0.0)**2,  # pseudo measurement #1         ##### TODO #####
-                    (0.0)**2,  # pseudo measurement #2
-                    ])
+            (1.0) ** 2,
+            (1.0) ** 2,
+        ])
         initial_measurements = MsgSensors()
-        ##### TODO #####
-        self.lpf_gyro_x = AlphaFilter(alpha=0., y0=initial_measurements.gyro_x)
-        self.lpf_gyro_y = AlphaFilter(alpha=0., y0=initial_measurements.gyro_y)
-        self.lpf_gyro_z = AlphaFilter(alpha=0., y0=initial_measurements.gyro_z)
+        self.lpf_gyro_x = AlphaFilter(alpha=alpha_gyro, y0=initial_measurements.gyro_x)
+        self.lpf_gyro_y = AlphaFilter(alpha=alpha_gyro, y0=initial_measurements.gyro_y)
+        self.lpf_gyro_z = AlphaFilter(alpha=alpha_gyro, y0=initial_measurements.gyro_z)
         self.analog_threshold = stats.chi2.isf(q=0.01, df=3)
         self.pseudo_threshold = stats.chi2.isf(q=0.01, df=2)
         self.gps_n_old = 9999
@@ -179,49 +162,82 @@ class Observer:
 
     def f(self, x:np.ndarray, u:np.ndarray)->np.ndarray:
         # system dynamics for propagation model: xdot = f(x, u)
-        ##### TODO #####
-        # pos   = x[0:3]
         vel = x[3:6]
         Theta = x[6:9]
         bias = x[9:12]
-        # wind = np.array([[x.item(12), x.item(13), 0]]).T
         y_gyro = u[0:3]
         y_accel = u[3:6]
+
+        R = euler_to_rotation(Theta.item(0), Theta.item(1), Theta.item(2))
+        pos_dot = R @ vel
+
+        omega = y_gyro - bias
+        vel_dot = (cross(omega) @ vel
+                   + MAV.gravity * (R.T @ np.array([[0.], [0.], [1.]]) + y_accel))
+
+        Theta_dot = S(Theta) @ omega
+        bias_dot = np.zeros((3, 1))
+        wind_dot = np.zeros((2, 1))
         xdot = np.concatenate((pos_dot, vel_dot, Theta_dot, bias_dot, wind_dot), axis=0)
         return xdot
 
     def h_analog(self, x:np.ndarray, u:np.ndarray)->np.ndarray:
-        ##### TODO #####
         # analog sensor measurements and pseudo measurements
         pos = x[0:3]
-        vel_body = x[3:6]
+        vel = x[3:6]
         Theta = x[6:9]
-        #bias = x[9:12]
-    
-        y = np.array([[abs_pres, diff_pres, sideslip]]).T
+
+        R = euler_to_rotation(Theta.item(0), Theta.item(1), Theta.item(2))
+        wind_world = np.array([[x.item(12)], [x.item(13)], [0]])
+        wind_body = R.T @ wind_world
+        vel_rel = vel - wind_body
+        Va = np.linalg.norm(vel_rel)
+
+        altitude = -pos.item(2)
+        abs_pres = MAV.rho * MAV.gravity * altitude
+        diff_pres = 0.5 * MAV.rho * Va ** 2
+        if Va > 1e-6:
+            sideslip = vel_rel.item(1) / Va
+        else:
+            sideslip = 0.0
+
+        y = np.array([[abs_pres], [diff_pres], [sideslip]])
         return y
 
     def h_gps(self, x:np.ndarray, u:np.ndarray)->np.ndarray:
-        ##### TODO #####        
         # measurement model for gps measurements
         pos = x[0:3]
-        vel_body = x[3:6]
+        vel = x[3:6]
         Theta = x[6:9]
 
-        y = np.array([[pn, pe, Vg, chi]]).T
+        R = euler_to_rotation(Theta.item(0), Theta.item(1), Theta.item(2))
+        vel_world = R @ vel
+        pn = pos.item(0)
+        pe = pos.item(1)
+        Vg = np.sqrt(vel_world.item(0) ** 2 + vel_world.item(1) ** 2)
+        chi = np.arctan2(vel_world.item(1), vel_world.item(0))
+
+        y = np.array([[pn], [pe], [Vg], [chi]])
         return y
 
     def h_pseudo(self, x:np.ndarray, u:np.ndarray)->np.ndarray:
-        ##### TODO ##### 
-        # measurement model for wind triangale pseudo measurement
-        #pos = x[0:3]
-        vel_body = x[3:6]
+        # measurement model for wind triangle pseudo measurement
+        vel = x[3:6]
         Theta = x[6:9]
-        #bias = x[9:12]
-        
+
+        R = euler_to_rotation(Theta.item(0), Theta.item(1), Theta.item(2))
+        vel_world = R @ vel
+        Vg = np.sqrt(vel_world.item(0) ** 2 + vel_world.item(1) ** 2)
+        chi = np.arctan2(vel_world.item(1), vel_world.item(0))
+        wn = x.item(12)
+        we = x.item(13)
+        psi = Theta.item(2)
+        u_body = vel.item(0)
+        v_body = vel.item(1)
+
         y = np.array([
-            [],  # wind triangle x
-            [],  # wind triangle y
+            [Vg * np.cos(chi) - (u_body * np.cos(psi) - v_body * np.sin(psi)) - wn],
+            [Vg * np.sin(chi) - (u_body * np.sin(psi) + v_body * np.cos(psi)) - we],
         ])
         return y
 

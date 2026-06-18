@@ -6,7 +6,7 @@ autopilot block for mavsim_python
 """
 import numpy as np
 import parameters.control_parameters as AP
-# from tools.transfer_function import TransferFunction
+from tools.transfer_function import TransferFunction
 from tools.wrap import wrap
 from controllers.pi_control import PIControl
 from controllers.pd_control_with_rate import PDControlWithRate

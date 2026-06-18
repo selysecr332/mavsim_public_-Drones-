@@ -47,6 +47,8 @@ class PlannerViewer:
         green = np.array([[0, 153, 51, 255]])/255.
         self.window.clear()
         DrawMap(world_map, self.window)
+        if tree.num_waypoints < 2:
+            return
         # draw things to the screen
         for i in range(1, tree.num_waypoints):
             if waypoints.type != 'dubins':

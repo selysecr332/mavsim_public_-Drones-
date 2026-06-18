@@ -26,6 +26,7 @@ from planners.path_manager import PathManager
 from planners.path_planner import PathPlanner
 from viewers.view_manager import ViewManager
 import time
+from message_types.msg_waypoints import MsgWaypoints
 from message_types.msg_world_map import MsgWorldMap
 #quitter = QuitListener()
 
@@ -45,6 +46,7 @@ viewers = ViewManager(map=True,
                       planning=True, 
                       video=False, video_name='chap12.mp4')
 world_map = MsgWorldMap()
+waypoints = MsgWaypoints()
 
 # initialize the simulation time
 sim_time = SIM.start_time
@@ -71,7 +73,11 @@ while sim_time < SIM.end_time:
                )
 
     # -------path manager-------------
-    path = path_manager.update(waypoints, estimated_state, PLAN.R_min)
+    if waypoints.num_waypoints >= 3:
+        path = path_manager.update(waypoints, PLAN.R_min, estimated_state)
+    else:
+        from message_types.msg_path import MsgPath
+        path = MsgPath()
 
     # -------path follower-------------
     autopilot_commands = path_follower.update(path, estimated_state)

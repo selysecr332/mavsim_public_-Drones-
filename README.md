@@ -10,6 +10,42 @@
 [uavbook.pdf](https://drive.google.com/file/d/10iq7L_kAAdkjCFoq4EBRaT1u212BbyJ7/view?usp=sharing)
   This file is a work in progress.  The intent is that this file will eventually become a second edition to the book.  But beware, it has not been carefully proof read, and we continue to update it regularly.
 
+## My MAVSim Implementation Progress
+
+Python simulation work for the Beard & McLain textbook projects, implemented through **Chapter 13** (camera gimbal, geolocation, and target orbit).
+
+| Area | Chapters | Status |
+|------|----------|--------|
+| UAV dynamics & visualization | 2–4 | Done |
+| Trim & wind simulation | 5 | Done |
+| State estimation (EKF / observer) | 8 | Done |
+| Path following & path manager | 10–11 | Done |
+| RRT path planning (Dubins) | 12 | Done |
+| Gimbal pointing & geolocation | 13 | Done |
+| Autopilot (closed-loop control) | 6 | In progress |
+
+### Simulation Screenshots
+
+**Chapter 12 — RRT Dubins path planning** (World Viewer + RRT tree search)
+
+![Chapter 12 RRT Dubins path planning](./screenshoot/lab_12.png)
+
+**Chapter 13 — orbit target / telemetry** (MAV viewer + state plots)
+
+![Chapter 13 orbit target simulation](./screenshoot/Rader.png)
+
+### Run the simulations
+
+From the repo root:
+
+```bash
+cd mavsim_python
+python launch_files/chap12/mavsim_chap12.py
+python launch_files/chap13/mavsim_chap13_orbit_target.py
+python launch_files/chap13/mavsim_chap13_point_camera.py
+python manual_control/mavsim_manual.py
+```
+
 ## Lecture Material
 
 The following lecture materials are included as a resource for instructors.  The slides closely follow the book.

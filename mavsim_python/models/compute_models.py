@@ -5,6 +5,7 @@ compute_ss_model
         2/4/2019 - RWB
 """
 import numpy as np
+from pathlib import Path
 from scipy.optimize import minimize
 from tools.rotations import euler_to_quaternion, quaternion_to_euler
 import parameters.aerosonde_parameters as MAV
@@ -19,7 +20,8 @@ def compute_model(mav, trim_state, trim_input):
     a_V1, a_V2, a_V3 = compute_tf_model(mav, trim_state, trim_input)
 
     # write transfer function gains to file
-    file = open('models/model_coef.py', 'w')
+    model_coef_path = Path(__file__).parent / 'model_coef.py'
+    file = open(model_coef_path, 'w')
     file.write('import numpy as np\n')
     file.write('x_trim = np.array([[%f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f]]).T\n' %
                (trim_state.item(0), trim_state.item(1), trim_state.item(2), trim_state.item(3),

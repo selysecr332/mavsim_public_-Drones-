@@ -63,7 +63,7 @@ while sim_time < end_time:
     # estimated_state = mav.true_state  # uses true states in the control
 
     # -------path manager-------------
-    path = path_manager.update(waypoints, estimated_state, PLAN.R_min)
+    path = path_manager.update(waypoints, PLAN.R_min, estimated_state)
 
     # -------path follower-------------
     autopilot_commands = path_follower.update(path, estimated_state)
